@@ -137,6 +137,9 @@ const seGet =
     "seGet"
   );
 
+seDig.volume = 0.3;
+seGet.volume = 0.3;
+
 const idleImg = new Image();
 idleImg.src = "player_idle.png";
 
@@ -174,6 +177,7 @@ let swing = false;
 function playSound(audio){
 
   audio.currentTime = 0;
+
   audio.play().catch(()=>{});
 }
 
@@ -396,10 +400,11 @@ function digStep(){
   if(block === 3){
 
     shake = 2;
+
+    playSound(seDig);
+
     return;
   }
-
-  playSound(seDig);
 
   if(block === 1){
 
@@ -458,12 +463,13 @@ function move(dx){
   if(block === 3){
 
     shake = 2;
+
+    playSound(seDig);
+
     moveCooldown = 5;
 
     return;
   }
-
-  playSound(seDig);
 
   if(block === 1){
 
@@ -799,19 +805,19 @@ shareBtn.addEventListener(
   ()=>{
 
     const text =
-      `石炭掘って！⛏️\n` +
-      `深度${depth}m\n` +
-      `石炭${coal}個！\n` +
+      `気づいたら\n` +
+      `ずっと石炭を掘っていた。⛏️🪨\n\n` +
+      `深度 ${depth}m\n` +
+      `石炭 ${coal}個\n\n` +
+      `無料ブラウザゲーム\n` +
+      `「石炭掘って」\n` +
+      `https://afoolhippo.github.io/game17/\n\n` +
+      `#石炭掘って\n` +
       `#カバゲーセン`;
-
-    const url =
-      location.href;
 
     window.open(
       "https://twitter.com/intent/tweet?text="
-      + encodeURIComponent(text)
-      + "&url="
-      + encodeURIComponent(url),
+      + encodeURIComponent(text),
       "_blank"
     );
   }
