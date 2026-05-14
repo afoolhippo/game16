@@ -29,30 +29,113 @@ if(window.visualViewport){
     );
 }
 
-const titleScreen = document.getElementById("titleScreen");
-const gameScreen = document.getElementById("gameScreen");
-const resultScreen = document.getElementById("resultScreen");
+const titleScreen =
+  document.getElementById(
+    "titleScreen"
+  );
 
-const startBtn = document.getElementById("startBtn");
-const retryBtn = document.getElementById("retryBtn");
-const shareBtn = document.getElementById("shareBtn");
-const homeBtn = document.getElementById("homeBtn");
-const backBtn = document.getElementById("backBtn");
+const gameScreen =
+  document.getElementById(
+    "gameScreen"
+  );
 
-const leftBtn = document.getElementById("leftBtn");
-const rightBtn = document.getElementById("rightBtn");
+const resultScreen =
+  document.getElementById(
+    "resultScreen"
+  );
 
-const depthText = document.getElementById("depthText");
-const coalText = document.getElementById("coalText");
-const timeText = document.getElementById("timeText");
+const startBtn =
+  document.getElementById(
+    "startBtn"
+  );
 
-const resultTitle = document.getElementById("resultTitle");
-const resultScore = document.getElementById("resultScore");
+const retryBtn =
+  document.getElementById(
+    "retryBtn"
+  );
 
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const shareBtn =
+  document.getElementById(
+    "shareBtn"
+  );
 
-const bgm = document.getElementById("bgm");
+const homeBtn =
+  document.getElementById(
+    "homeBtn"
+  );
+
+const backBtn =
+  document.getElementById(
+    "backBtn"
+  );
+
+const titleImage =
+  document.getElementById(
+    "titleImage"
+  );
+
+const leftBtn =
+  document.getElementById(
+    "leftBtn"
+  );
+
+const rightBtn =
+  document.getElementById(
+    "rightBtn"
+  );
+
+const depthText =
+  document.getElementById(
+    "depthText"
+  );
+
+const coalText =
+  document.getElementById(
+    "coalText"
+  );
+
+const timeText =
+  document.getElementById(
+    "timeText"
+  );
+
+const resultTitle =
+  document.getElementById(
+    "resultTitle"
+  );
+
+const resultComment =
+  document.getElementById(
+    "resultComment"
+  );
+
+const resultScore =
+  document.getElementById(
+    "resultScore"
+  );
+
+const canvas =
+  document.getElementById(
+    "gameCanvas"
+  );
+
+const ctx =
+  canvas.getContext("2d");
+
+const bgm =
+  document.getElementById(
+    "bgm"
+  );
+
+const seDig =
+  document.getElementById(
+    "seDig"
+  );
+
+const seGet =
+  document.getElementById(
+    "seGet"
+  );
 
 const idleImg = new Image();
 idleImg.src = "player_idle.png";
@@ -67,8 +150,8 @@ const MAP_ROWS = 320;
 let map = [];
 
 let player = {
-  x: 7,
-  y: 0
+  x:7,
+  y:0
 };
 
 let cameraY = 0;
@@ -88,43 +171,75 @@ let moveCooldown = 0;
 
 let swing = false;
 
+function playSound(audio){
+
+  audio.currentTime = 0;
+  audio.play().catch(()=>{});
+}
+
 function showScreen(screen){
 
-  titleScreen.classList.remove("active");
-  gameScreen.classList.remove("active");
-  resultScreen.classList.remove("active");
+  titleScreen.classList.remove(
+    "active"
+  );
 
-  screen.classList.add("active");
+  gameScreen.classList.remove(
+    "active"
+  );
+
+  resultScreen.classList.remove(
+    "active"
+  );
+
+  screen.classList.add(
+    "active"
+  );
 }
 
 function generateMap(){
 
   map = [];
 
-  for(let y = 0; y < MAP_ROWS; y++){
+  for(let y=0;y<MAP_ROWS;y++){
 
     const row = [];
 
-    for(let x = 0; x < COLS; x++){
+    for(let x=0;x<COLS;x++){
 
       if(y < 2){
+
         row.push(0);
         continue;
       }
 
       const r = Math.random();
 
-      let coalRate = 0.14 + y * 0.0005;
-      if(coalRate > 0.28) coalRate = 0.28;
+      let coalRate =
+        0.14 + y * 0.0005;
 
-      let rockRate = 0.08 + y * 0.00035;
-      if(rockRate > 0.18) rockRate = 0.18;
+      if(coalRate > 0.28){
+        coalRate = 0.28;
+      }
+
+      let rockRate =
+        0.08 + y * 0.00035;
+
+      if(rockRate > 0.18){
+        rockRate = 0.18;
+      }
 
       if(r < coalRate){
+
         row.push(2);
-      }else if(r < coalRate + rockRate){
+
+      }else if(
+        r < coalRate + rockRate
+      ){
+
         row.push(3);
+
       }else{
+
         row.push(1);
       }
     }
@@ -135,9 +250,14 @@ function generateMap(){
 
 function updateHud(){
 
-  depthText.textContent = depth;
-  coalText.textContent = coal;
-  timeText.textContent = Math.ceil(time);
+  depthText.textContent =
+    depth;
+
+  coalText.textContent =
+    coal;
+
+  timeText.textContent =
+    Math.ceil(time);
 }
 
 function startGame(){
@@ -153,21 +273,21 @@ function startGame(){
   depth = 0;
   time = 60;
 
-  leftPressed = false;
-  rightPressed = false;
-
   shake = 0;
   autoDigTimer = 0;
   moveCooldown = 0;
+
   swing = false;
 
   running = true;
 
   updateHud();
+
   showScreen(gameScreen);
 
   bgm.currentTime = 0;
-  bgm.volume = 0.5;
+  bgm.volume = 0.45;
+
   bgm.play().catch(()=>{});
 
   requestAnimationFrame(loop);
@@ -175,27 +295,43 @@ function startGame(){
 
 function endGame(){
 
-  if(!running) return;
+  if(!running){
+    return;
+  }
 
   running = false;
 
   bgm.pause();
 
-  let title = "見習い炭鉱夫";
+  let title =
+    "穴掘りビギナー";
+
+  let comment =
+    "まだ地上に帰れる。";
 
   if(depth >= 300){
-    title = "石炭職人";
+
+    title =
+      "穴掘りキング";
+
+    comment =
+      "石炭がちょっと好きになってきた。";
   }
 
-  if(depth >= 600){
-    title = "地底のカバ";
+  if(depth >= 700){
+
+    title =
+      "地底人";
+
+    comment =
+      "もう太陽を見ていない。";
   }
 
-  if(depth >= 900){
-    title = "黒いダイヤの王";
-  }
+  resultTitle.textContent =
+    title;
 
-  resultTitle.textContent = title;
+  resultComment.textContent =
+    comment;
 
   resultScore.innerHTML =
     `深度 ${depth}m<br>` +
@@ -227,55 +363,64 @@ function getColor(y){
 
 function getBlock(x,y){
 
-  if(!map[y]) return 0;
+  if(!map[y]){
+    return 0;
+  }
+
   return map[y][x];
 }
 
 function setBlock(x,y,value){
 
-  if(!map[y]) return;
+  if(!map[y]){
+    return;
+  }
+
   map[y][x] = value;
-}
-
-function digCurrentCell(){
-
-  const block = getBlock(
-    player.x,
-    player.y
-  );
-
-  if(block === 1){
-    setBlock(player.x, player.y, 0);
-  }
-
-  if(block === 2){
-    setBlock(player.x, player.y, 0);
-    coal++;
-  }
 }
 
 function digStep(){
 
-  const belowY = player.y + 1;
-  const belowX = player.x;
+  const belowY =
+    player.y + 1;
 
-  const block = getBlock(
-    belowX,
-    belowY
-  );
+  const belowX =
+    player.x;
+
+  const block =
+    getBlock(
+      belowX,
+      belowY
+    );
 
   if(block === 3){
+
     shake = 2;
     return;
   }
 
+  playSound(seDig);
+
   if(block === 1){
-    setBlock(belowX, belowY, 0);
+
+    setBlock(
+      belowX,
+      belowY,
+      0
+    );
   }
 
   if(block === 2){
-    setBlock(belowX, belowY, 0);
+
+    setBlock(
+      belowX,
+      belowY,
+      0
+    );
+
     coal++;
+
+    playSound(seGet);
   }
 
   player.y++;
@@ -286,13 +431,10 @@ function digStep(){
   );
 
   swing = !swing;
+
   shake = 4;
 
   updateHud();
-
-  if(player.y >= MAP_ROWS - 5){
-    endGame();
-  }
 }
 
 function move(dx){
@@ -301,33 +443,48 @@ function move(dx){
     return;
   }
 
-  const nx = player.x + dx;
-  const ny = player.y;
+  const nx =
+    player.x + dx;
+
+  const ny =
+    player.y;
 
   if(nx < 0) return;
   if(nx >= COLS) return;
 
-  const block = getBlock(nx, ny);
+  const block =
+    getBlock(nx, ny);
 
   if(block === 3){
+
     shake = 2;
     moveCooldown = 5;
+
     return;
   }
 
+  playSound(seDig);
+
   if(block === 1){
+
     setBlock(nx, ny, 0);
   }
 
   if(block === 2){
+
     setBlock(nx, ny, 0);
+
     coal++;
+
+    playSound(seGet);
   }
 
   player.x = nx;
 
   swing = !swing;
+
   shake = 2;
+
   moveCooldown = 7;
 
   updateHud();
@@ -335,8 +492,11 @@ function move(dx){
 
 function drawTile(x,y,type){
 
-  const px = x * TILE;
-  const py = y * TILE - cameraY;
+  const px =
+    x * TILE;
+
+  const py =
+    y * TILE - cameraY;
 
   if(
     py < -TILE ||
@@ -347,7 +507,8 @@ function drawTile(x,y,type){
 
   if(type === 0){
 
-    ctx.fillStyle = "#080604";
+    ctx.fillStyle =
+      "#080604";
 
     ctx.fillRect(
       px,
@@ -359,7 +520,8 @@ function drawTile(x,y,type){
     return;
   }
 
-  ctx.fillStyle = getColor(y);
+  ctx.fillStyle =
+    getColor(y);
 
   ctx.fillRect(
     px,
@@ -368,7 +530,9 @@ function drawTile(x,y,type){
     TILE
   );
 
-  ctx.fillStyle = "rgba(0,0,0,0.22)";
+  ctx.fillStyle =
+    "rgba(0,0,0,0.22)";
+
   ctx.fillRect(
     px,
     py + TILE - 4,
@@ -383,17 +547,10 @@ function drawTile(x,y,type){
     TILE
   );
 
-  ctx.fillStyle = "rgba(255,255,255,0.06)";
-  ctx.fillRect(
-    px + 3,
-    py + 3,
-    6,
-    3
-  );
-
   if(type === 2){
 
-    ctx.fillStyle = "#0b0b0b";
+    ctx.fillStyle =
+      "#0b0b0b";
 
     ctx.fillRect(
       px + 6,
@@ -408,20 +565,12 @@ function drawTile(x,y,type){
       7,
       5
     );
-
-    ctx.fillStyle = "#2d2d2d";
-
-    ctx.fillRect(
-      px + 8,
-      py + 8,
-      4,
-      3
-    );
   }
 
   if(type === 3){
 
-    ctx.fillStyle = "#555";
+    ctx.fillStyle =
+      "#555";
 
     ctx.fillRect(
       px + 3,
@@ -429,30 +578,13 @@ function drawTile(x,y,type){
       18,
       18
     );
-
-    ctx.fillStyle = "#888";
-
-    ctx.fillRect(
-      px + 5,
-      py + 5,
-      5,
-      5
-    );
-
-    ctx.fillStyle = "#333";
-
-    ctx.fillRect(
-      px + 13,
-      py + 12,
-      6,
-      6
-    );
   }
 }
 
 function drawBackground(){
 
-  ctx.fillStyle = "#060403";
+  ctx.fillStyle =
+    "#060403";
 
   ctx.fillRect(
     0,
@@ -460,49 +592,6 @@ function drawBackground(){
     canvas.width,
     canvas.height
   );
-
-  for(let i = 0; i < 18; i++){
-
-    ctx.fillStyle =
-      i % 2 === 0
-        ? "#100b08"
-        : "#0c0806";
-
-    ctx.fillRect(
-      0,
-      i * 48 - (cameraY % 48),
-      canvas.width,
-      24
-    );
-  }
-}
-
-function drawDepthLines(){
-
-  ctx.fillStyle = "rgba(255,255,255,0.16)";
-  ctx.font = "12px monospace";
-
-  for(let y = 0; y < map.length; y += 25){
-
-    const py = y * TILE - cameraY;
-
-    if(py < 0 || py > canvas.height){
-      continue;
-    }
-
-    ctx.fillRect(
-      0,
-      py,
-      canvas.width,
-      1
-    );
-
-    ctx.fillText(
-      `${y * 2}m`,
-      6,
-      py - 4
-    );
-  }
 }
 
 function drawPlayer(){
@@ -535,37 +624,35 @@ function loop(){
     return;
   }
 
-  time -= 1 / 60;
+  time -= 1/60;
 
   if(time <= 0){
+
     endGame();
     return;
   }
 
   if(moveCooldown > 0){
+
     moveCooldown--;
   }
 
   if(leftPressed){
+
     move(-1);
   }
 
   if(rightPressed){
+
     move(1);
   }
 
   autoDigTimer++;
 
-  const digInterval =
-    depth < 300
-      ? 10
-      : depth < 700
-        ? 9
-        : 8;
-
-  if(autoDigTimer >= digInterval){
+  if(autoDigTimer >= 10){
 
     autoDigTimer = 0;
+
     digStep();
   }
 
@@ -574,8 +661,9 @@ function loop(){
     - canvas.height * 0.35;
 
   cameraY +=
-    (targetCameraY - cameraY)
-    * 0.1;
+    (
+      targetCameraY - cameraY
+    ) * 0.1;
 
   if(cameraY < 0){
     cameraY = 0;
@@ -586,8 +674,11 @@ function loop(){
   if(shake > 0){
 
     ctx.translate(
-      (Math.random() - 0.5) * shake,
-      (Math.random() - 0.5) * shake
+      (Math.random()-0.5)
+      * shake,
+
+      (Math.random()-0.5)
+      * shake
     );
 
     shake *= 0.8;
@@ -595,9 +686,9 @@ function loop(){
 
   drawBackground();
 
-  for(let y = 0; y < map.length; y++){
+  for(let y=0;y<map.length;y++){
 
-    for(let x = 0; x < COLS; x++){
+    for(let x=0;x<COLS;x++){
 
       drawTile(
         x,
@@ -607,7 +698,6 @@ function loop(){
     }
   }
 
-  drawDepthLines();
   drawPlayer();
 
   ctx.restore();
@@ -617,7 +707,11 @@ function loop(){
   requestAnimationFrame(loop);
 }
 
-function holdButton(btn,onStart,onEnd){
+function holdButton(
+  btn,
+  onStart,
+  onEnd
+){
 
   btn.addEventListener(
     "touchstart",
@@ -629,14 +723,6 @@ function holdButton(btn,onStart,onEnd){
 
   btn.addEventListener(
     "touchend",
-    e=>{
-      e.preventDefault();
-      onEnd();
-    }
-  );
-
-  btn.addEventListener(
-    "touchcancel",
     e=>{
       e.preventDefault();
       onEnd();
@@ -658,14 +744,6 @@ function holdButton(btn,onStart,onEnd){
       onEnd();
     }
   );
-
-  btn.addEventListener(
-    "mouseleave",
-    e=>{
-      e.preventDefault();
-      onEnd();
-    }
-  );
 }
 
 holdButton(
@@ -680,35 +758,12 @@ holdButton(
   ()=> rightPressed = false
 );
 
-window.addEventListener(
-  "keydown",
-  e=>{
-
-    if(e.key === "ArrowLeft"){
-      leftPressed = true;
-    }
-
-    if(e.key === "ArrowRight"){
-      rightPressed = true;
-    }
-  }
-);
-
-window.addEventListener(
-  "keyup",
-  e=>{
-
-    if(e.key === "ArrowLeft"){
-      leftPressed = false;
-    }
-
-    if(e.key === "ArrowRight"){
-      rightPressed = false;
-    }
-  }
-);
-
 startBtn.addEventListener(
+  "click",
+  startGame
+);
+
+titleImage.addEventListener(
   "click",
   startGame
 );
@@ -723,7 +778,9 @@ backBtn.addEventListener(
   ()=>{
 
     running = false;
+
     bgm.pause();
+
     showScreen(titleScreen);
   }
 );
@@ -744,10 +801,11 @@ shareBtn.addEventListener(
     const text =
       `石炭掘って！⛏️\n` +
       `深度${depth}m\n` +
-      `石炭${coal}個掘りました！\n` +
+      `石炭${coal}個！\n` +
       `#カバゲーセン`;
 
-    const url = location.href;
+    const url =
+      location.href;
 
     window.open(
       "https://twitter.com/intent/tweet?text="

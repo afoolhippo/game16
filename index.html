@@ -7,6 +7,7 @@
     content="width=device-width, initial-scale=1.0, user-scalable=no"
   >
   <title>石炭掘って</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,14 +17,17 @@
   <!-- TITLE -->
   <section id="titleScreen" class="screen active">
 
-    <div class="titleBox">
+    <div class="titleWrap">
 
-      <h1>石炭掘って</h1>
+      <img
+        id="titleImage"
+        src="title.png"
+        alt="石炭掘って"
+      >
 
-      <p>
-        自動で掘り進むカバ炭鉱夫を操作し、<br>
-        石炭を集めながら地下深くへ！<br>
-        岩盤を避けろ！
+      <p class="ruleText">
+        自動で掘り進むカバを左右操作！<br>
+        石炭を集めながら地下深くへ！
       </p>
 
       <button id="startBtn">
@@ -37,7 +41,11 @@
   <!-- GAME -->
   <section id="gameScreen" class="screen">
 
-    <canvas id="gameCanvas" width="360" height="640"></canvas>
+    <canvas
+      id="gameCanvas"
+      width="360"
+      height="640"
+    ></canvas>
 
     <div class="hud">
       <div>深度 <span id="depthText">0</span>m</div>
@@ -50,8 +58,15 @@
     </button>
 
     <div class="controls">
-      <button id="leftBtn">←</button>
-      <button id="rightBtn">→</button>
+
+      <button id="leftBtn">
+        ←
+      </button>
+
+      <button id="rightBtn">
+        →
+      </button>
+
     </div>
 
   </section>
@@ -62,8 +77,12 @@
     <div class="resultBox">
 
       <h2 id="resultTitle">
-        地底のカバ
+        穴掘りキング
       </h2>
+
+      <p id="resultComment">
+        石炭がちょっと好きになってきた。
+      </p>
 
       <p id="resultScore"></p>
 
@@ -85,7 +104,21 @@
 
 </div>
 
-<audio id="bgm" src="bgm.mp3" loop></audio>
+<audio
+  id="bgm"
+  src="bgm.mp3"
+  loop
+></audio>
+
+<audio
+  id="seDig"
+  src="se_dig.mp3"
+></audio>
+
+<audio
+  id="seGet"
+  src="se_get.mp3"
+></audio>
 
 <script src="game.js"></script>
 
