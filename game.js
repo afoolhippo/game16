@@ -174,6 +174,8 @@ let moveCooldown = 0;
 
 let swing = false;
 
+let rockSePlayed = false;
+
 function playSound(audio){
 
   audio.currentTime = 0;
@@ -282,6 +284,8 @@ function startGame(){
   moveCooldown = 0;
 
   swing = false;
+
+  rockSePlayed = false;
 
   running = true;
 
@@ -401,10 +405,17 @@ function digStep(){
 
     shake = 2;
 
-    playSound(seDig);
+    if(!rockSePlayed){
+
+      playSound(seDig);
+
+      rockSePlayed = true;
+    }
 
     return;
   }
+
+  rockSePlayed = false;
 
   if(block === 1){
 
@@ -464,12 +475,19 @@ function move(dx){
 
     shake = 2;
 
-    playSound(seDig);
+    if(!rockSePlayed){
+
+      playSound(seDig);
+
+      rockSePlayed = true;
+    }
 
     moveCooldown = 5;
 
     return;
   }
+
+  rockSePlayed = false;
 
   if(block === 1){
 
@@ -736,6 +754,14 @@ function holdButton(
   );
 
   btn.addEventListener(
+    "touchcancel",
+    e=>{
+      e.preventDefault();
+      onEnd();
+    }
+  );
+
+  btn.addEventListener(
     "mousedown",
     e=>{
       e.preventDefault();
@@ -745,6 +771,14 @@ function holdButton(
 
   btn.addEventListener(
     "mouseup",
+    e=>{
+      e.preventDefault();
+      onEnd();
+    }
+  );
+
+  btn.addEventListener(
+    "mouseleave",
     e=>{
       e.preventDefault();
       onEnd();
