@@ -180,12 +180,20 @@ button{
   border:none;
   background:#f1c84b;
   color:#111;
-  font-weight:bold;
+
+  font-family:
+    "DotGothic16",
+    sans-serif;
+
+  font-weight:normal;
   font-size:16px;
+
   padding:14px;
   margin:8px auto;
+
   display:block;
   width:88%;
+
   box-shadow:4px 4px 0 #000;
 }
 
