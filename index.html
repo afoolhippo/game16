@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no"
+  >
+  <title>石炭掘って</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- TITLE -->
+  <section id="titleScreen" class="screen active">
+
+    <div class="titleBox">
+
+      <h1>石炭掘って</h1>
+
+      <p>
+        自動で掘り進むカバ炭鉱夫を操作し、<br>
+        石炭を集めながら地下深くへ！<br>
+        岩盤を避けろ！
+      </p>
+
+      <button id="startBtn">
+        タップしてスタート
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- GAME -->
+  <section id="gameScreen" class="screen">
+
+    <canvas id="gameCanvas" width="360" height="640"></canvas>
+
+    <div class="hud">
+      <div>深度 <span id="depthText">0</span>m</div>
+      <div>石炭 <span id="coalText">0</span></div>
+      <div>残り <span id="timeText">60</span>秒</div>
+    </div>
+
+    <button id="backBtn">
+      タイトルへ戻る
+    </button>
+
+    <div class="controls">
+      <button id="leftBtn">←</button>
+      <button id="rightBtn">→</button>
+    </div>
+
+  </section>
+
+  <!-- RESULT -->
+  <section id="resultScreen" class="screen">
+
+    <div class="resultBox">
+
+      <h2 id="resultTitle">
+        地底のカバ
+      </h2>
+
+      <p id="resultScore"></p>
+
+      <button id="shareBtn">
+        Xでシェア
+      </button>
+
+      <button id="retryBtn">
+        もう1回掘る
+      </button>
+
+      <button id="homeBtn">
+        カバゲーセンへ
+      </button>
+
+    </div>
+
+  </section>
+
+</div>
+
+<audio id="bgm" src="bgm.mp3" loop></audio>
+
+<script src="game.js"></script>
+
+</body>
+</html>
