@@ -1,203 +1,90 @@
 *{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
-html,
 body{
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#050403;
-  font-family:
-    "DotGothic16",
-    sans-serif;
-  color:#fff;
-}
-
-#app{
-  width:100vw;
-  height:var(--app-height,100vh);
-  overflow:hidden;
+background:#6a4f34;
+font-family:'DotGothic16',sans-serif;
+color:white;
+overflow:hidden;
 }
 
 .screen{
-  display:none;
-  width:100%;
-  height:100%;
-  position:relative;
+display:none;
+width:100vw;
+height:100vh;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+text-align:center;
 }
 
 .screen.active{
-  display:flex;
-}
-
-/* TITLE */
-
-#titleScreen{
-  align-items:flex-start;
-  justify-content:flex-start;
-  padding:12px 18px 20px;
-  background:
-    linear-gradient(
-      #1b140f,
-      #050403
-    );
-}
-
-.titleWrap{
-  width:100%;
-  max-width:420px;
-  margin:0 auto;
-  text-align:center;
+display:flex;
 }
 
 #titleImage{
-  width:100%;
-  display:block;
-  image-rendering:pixelated;
-  margin:0 auto 14px;
+width:85%;
+max-width:420px;
+image-rendering:pixelated;
+margin-bottom:20px;
 }
 
-.ruleText{
-  line-height:1.7;
-  font-size:15px;
-  margin-bottom:18px;
-  color:#fff1bf;
-  text-shadow:2px 2px 0 #000;
-}
-
-/* GAME */
-
-#gameScreen{
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:#050403;
-}
-
-#gameScreen.active{
-  display:flex;
-}
-
-#gameCanvas{
-  width:100vw;
-  height:100%;
-  max-width:420px;
-  background:#080604;
-  image-rendering:pixelated;
-}
-
-.hud{
-  position:absolute;
-  top:10px;
-  left:10px;
-  z-index:10;
-  font-size:14px;
-  line-height:1.7;
-  color:#fff4b8;
-  text-shadow:2px 2px 0 #000;
-}
-
-#backBtn{
-  position:absolute;
-  top:10px;
-  right:10px;
-  width:auto;
-  margin:0;
-  padding:10px 12px;
-  font-size:12px;
-  z-index:10;
-}
-
-.controls{
-  position:absolute;
-  left:50%;
-  bottom:calc(
-    12px + env(safe-area-inset-bottom)
-  );
-  transform:translateX(-50%);
-  width:min(94vw,360px);
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  z-index:20;
-}
-
-.controls button{
-  width:100%;
-  margin:0;
-  font-size:24px;
-  padding:18px 0;
-}
-
-/* RESULT */
-
-#resultScreen{
-  align-items:flex-start;
-  justify-content:flex-start;
-  padding:20px 18px;
-  background:
-    linear-gradient(
-      #1b140f,
-      #050403
-    );
-}
-
-.resultBox{
-  width:100%;
-  max-width:420px;
-  margin:0 auto;
-  background:#2b2017;
-  border:4px solid #f1c84b;
-  padding:24px 18px;
-  text-align:center;
-  box-shadow:0 0 0 4px #000;
-}
-
-#resultTitle{
-  margin:0 0 12px;
-  font-size:34px;
-  color:#f1c84b;
-  text-shadow:3px 3px 0 #000;
-}
-
-#resultComment{
-  margin:0 0 20px;
-  line-height:1.7;
-  color:#fff1bf;
-}
-
-#resultScore{
-  line-height:1.9;
-  margin-bottom:22px;
-  font-size:17px;
+.ruleBox{
+width:85%;
+max-width:420px;
+background:#00000055;
+padding:12px;
+border:3px solid #d9b36b;
+margin-bottom:20px;
+line-height:1.8;
 }
 
 button{
-  border:none;
-  background:#f1c84b;
-  color:#111;
-
-  font-family:
-    "DotGothic16",
-    sans-serif;
-
-  font-weight:normal;
-  font-size:16px;
-
-  padding:14px;
-  margin:8px auto;
-
-  display:block;
-  width:88%;
-
-  box-shadow:4px 4px 0 #000;
+font-family:'DotGothic16',sans-serif;
+padding:12px 20px;
+margin:8px;
+font-size:18px;
+border:none;
+background:#d9b36b;
+color:#222;
+border-radius:8px;
 }
 
-button:active{
-  transform:translate(2px,2px);
-  box-shadow:2px 2px 0 #000;
+#gameCanvas{
+width:100vw;
+height:100vh;
+image-rendering:pixelated;
+background:#8c6239;
+}
+
+#hud{
+position:absolute;
+top:10px;
+left:10px;
+right:10px;
+display:flex;
+justify-content:space-between;
+font-size:18px;
+z-index:10;
+}
+
+#rankImage{
+width:240px;
+height:240px;
+object-fit:contain;
+image-rendering:pixelated;
+margin:10px 0;
+}
+
+#rankTitle{
+font-size:28px;
+margin-top:10px;
+}
+
+#finalScore{
+font-size:24px;
+margin-bottom:10px;
 }

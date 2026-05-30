@@ -1,858 +1,267 @@
-function setAppHeight(){
+const titleScreen = document.getElementById("titleScreen");
+const gameScreen = document.getElementById("gameScreen");
+const resultScreen = document.getElementById("resultScreen");
 
-  const h =
-    window.visualViewport
-      ? window.visualViewport.height
-      : window.innerHeight;
+const startBtn = document.getElementById("startBtn");
+const retryBtn = document.getElementById("retryBtn");
+const homeBtn = document.getElementById("homeBtn");
+const shareBtn = document.getElementById("shareBtn");
 
-  document.documentElement
-    .style
-    .setProperty(
-      "--app-height",
-      `${h}px`
-    );
-}
+const depthText = document.getElementById("depth");
+const coalText = document.getElementById("coal");
 
-setAppHeight();
+const rankTitle = document.getElementById("rankTitle");
+const rankImage = document.getElementById("rankImage");
+const finalScore = document.getElementById("finalScore");
 
-window.addEventListener(
-  "resize",
-  setAppHeight
-);
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-if(window.visualViewport){
+let depth;
+let coal;
+let gameOver;
 
-  window.visualViewport
-    .addEventListener(
-      "resize",
-      setAppHeight
-    );
-}
+const TILE = 32;
 
-const titleScreen =
-  document.getElementById(
-    "titleScreen"
-  );
-
-const gameScreen =
-  document.getElementById(
-    "gameScreen"
-  );
-
-const resultScreen =
-  document.getElementById(
-    "resultScreen"
-  );
-
-const startBtn =
-  document.getElementById(
-    "startBtn"
-  );
-
-const retryBtn =
-  document.getElementById(
-    "retryBtn"
-  );
-
-const shareBtn =
-  document.getElementById(
-    "shareBtn"
-  );
-
-const homeBtn =
-  document.getElementById(
-    "homeBtn"
-  );
-
-const backBtn =
-  document.getElementById(
-    "backBtn"
-  );
-
-const titleImage =
-  document.getElementById(
-    "titleImage"
-  );
-
-const leftBtn =
-  document.getElementById(
-    "leftBtn"
-  );
-
-const rightBtn =
-  document.getElementById(
-    "rightBtn"
-  );
-
-const depthText =
-  document.getElementById(
-    "depthText"
-  );
-
-const coalText =
-  document.getElementById(
-    "coalText"
-  );
-
-const timeText =
-  document.getElementById(
-    "timeText"
-  );
-
-const resultTitle =
-  document.getElementById(
-    "resultTitle"
-  );
-
-const resultComment =
-  document.getElementById(
-    "resultComment"
-  );
-
-const resultScore =
-  document.getElementById(
-    "resultScore"
-  );
-
-const canvas =
-  document.getElementById(
-    "gameCanvas"
-  );
-
-const ctx =
-  canvas.getContext("2d");
-
-const bgm =
-  document.getElementById(
-    "bgm"
-  );
-
-const seDig =
-  document.getElementById(
-    "seDig"
-  );
-
-const seGet =
-  document.getElementById(
-    "seGet"
-  );
-
-seDig.volume = 0.3;
-seGet.volume = 0.3;
-
-const idleImg = new Image();
-idleImg.src = "player_idle.png";
-
-const swingImg = new Image();
-swingImg.src = "player_swing.png";
-
-const TILE = 24;
-const COLS = 15;
-const MAP_ROWS = 320;
-
-let map = [];
-
-let player = {
-  x:7,
-  y:0
-};
-
-let cameraY = 0;
-
-let coal = 0;
-let depth = 0;
-let time = 60;
-
-let running = false;
-
-let leftPressed = false;
-let rightPressed = false;
-
-let shake = 0;
-let autoDigTimer = 0;
-let moveCooldown = 0;
-
-let swing = false;
-
-let rockSePlayed = false;
-
-function playSound(audio){
-
-  audio.currentTime = 0;
-
-  audio.play().catch(()=>{});
-}
-
-function showScreen(screen){
-
-  titleScreen.classList.remove(
-    "active"
-  );
-
-  gameScreen.classList.remove(
-    "active"
-  );
-
-  resultScreen.classList.remove(
-    "active"
-  );
-
-  screen.classList.add(
-    "active"
-  );
-}
-
-function generateMap(){
-
-  map = [];
-
-  for(let y=0;y<MAP_ROWS;y++){
-
-    const row = [];
-
-    for(let x=0;x<COLS;x++){
-
-      if(y < 2){
-
-        row.push(0);
-        continue;
-      }
-
-      const r = Math.random();
-
-      let coalRate =
-        0.14 + y * 0.0005;
-
-      if(coalRate > 0.28){
-        coalRate = 0.28;
-      }
-
-      let rockRate =
-        0.08 + y * 0.00035;
-
-      if(rockRate > 0.18){
-        rockRate = 0.18;
-      }
-
-      if(r < coalRate){
-
-        row.push(2);
-
-      }else if(
-        r < coalRate + rockRate
-      ){
-
-        row.push(3);
-
-      }else{
-
-        row.push(1);
-      }
-    }
-
-    map.push(row);
-  }
-}
-
-function updateHud(){
-
-  depthText.textContent =
-    depth;
-
-  coalText.textContent =
-    coal;
-
-  timeText.textContent =
-    Math.ceil(time);
-}
+let player;
 
 function startGame(){
 
-  generateMap();
+titleScreen.classList.remove("active");
+resultScreen.classList.remove("active");
+gameScreen.classList.add("active");
 
-  player.x = 7;
-  player.y = 0;
+depth = 0;
+coal = 0;
+gameOver = false;
 
-  cameraY = 0;
+player = {
+x:5,
+y:3
+};
 
-  coal = 0;
-  depth = 0;
-  time = 60;
+generateMap();
 
-  shake = 0;
-  autoDigTimer = 0;
-  moveCooldown = 0;
+updateHUD();
 
-  swing = false;
+requestAnimationFrame(loop);
 
-  rockSePlayed = false;
-
-  running = true;
-
-  updateHud();
-
-  showScreen(gameScreen);
-
-  bgm.currentTime = 0;
-  bgm.volume = 0.45;
-
-  bgm.play().catch(()=>{});
-
-  requestAnimationFrame(loop);
 }
 
-function endGame(){
+let map=[];
 
-  if(!running){
-    return;
-  }
+function generateMap(){
 
-  running = false;
+map=[];
 
-  bgm.pause();
+for(let y=0;y<50;y++){
 
-  let title =
-    "穴掘りビギナー";
+let row=[];
 
-  let comment =
-    "まだ地上に帰れる。";
+for(let x=0;x<10;x++){
 
-  if(depth >= 300){
+let r=Math.random();
 
-    title =
-      "穴掘りキング";
-
-    comment =
-      "石炭がちょっと好きになってきた。";
-  }
-
-  if(depth >= 700){
-
-    title =
-      "地底人";
-
-    comment =
-      "もう太陽を見ていない。";
-  }
-
-  resultTitle.textContent =
-    title;
-
-  resultComment.textContent =
-    comment;
-
-  resultScore.innerHTML =
-    `深度 ${depth}m<br>` +
-    `石炭 ${coal}個`;
-
-  showScreen(resultScreen);
+if(r<0.12){
+row.push("coal");
+}
+else if(r<0.18){
+row.push("rock");
+}
+else{
+row.push("soil");
 }
 
-function getColor(y){
-
-  if(y < 40){
-    return "#5a3a22";
-  }
-
-  if(y < 80){
-    return "#453020";
-  }
-
-  if(y < 140){
-    return "#30231d";
-  }
-
-  if(y < 220){
-    return "#2a1d1b";
-  }
-
-  return "#211716";
 }
 
-function getBlock(x,y){
+map.push(row);
 
-  if(!map[y]){
-    return 0;
-  }
-
-  return map[y][x];
 }
 
-function setBlock(x,y,value){
+map[player.y][player.x]="empty";
 
-  if(!map[y]){
-    return;
-  }
-
-  map[y][x] = value;
 }
 
-function digStep(){
+function updateHUD(){
 
-  const belowY =
-    player.y + 1;
+depthText.textContent = depth;
+coalText.textContent = coal;
 
-  const belowX =
-    player.x;
-
-  const block =
-    getBlock(
-      belowX,
-      belowY
-    );
-
-  if(block === 3){
-
-    shake = 2;
-
-    if(!rockSePlayed){
-
-      playSound(seDig);
-
-      rockSePlayed = true;
-    }
-
-    return;
-  }
-
-  rockSePlayed = false;
-
-  if(block === 1){
-
-    setBlock(
-      belowX,
-      belowY,
-      0
-    );
-  }
-
-  if(block === 2){
-
-    setBlock(
-      belowX,
-      belowY,
-      0
-    );
-
-    coal++;
-
-    playSound(seGet);
-  }
-
-  player.y++;
-
-  depth = Math.max(
-    depth,
-    player.y * 2
-  );
-
-  swing = !swing;
-
-  shake = 4;
-
-  updateHud();
-}
-
-function move(dx){
-
-  if(moveCooldown > 0){
-    return;
-  }
-
-  const nx =
-    player.x + dx;
-
-  const ny =
-    player.y;
-
-  if(nx < 0) return;
-  if(nx >= COLS) return;
-
-  const block =
-    getBlock(nx, ny);
-
-  if(block === 3){
-
-    shake = 2;
-
-    if(!rockSePlayed){
-
-      playSound(seDig);
-
-      rockSePlayed = true;
-    }
-
-    moveCooldown = 5;
-
-    return;
-  }
-
-  rockSePlayed = false;
-
-  if(block === 1){
-
-    setBlock(nx, ny, 0);
-  }
-
-  if(block === 2){
-
-    setBlock(nx, ny, 0);
-
-    coal++;
-
-    playSound(seGet);
-  }
-
-  player.x = nx;
-
-  swing = !swing;
-
-  shake = 2;
-
-  moveCooldown = 7;
-
-  updateHud();
-}
-
-function drawTile(x,y,type){
-
-  const px =
-    x * TILE;
-
-  const py =
-    y * TILE - cameraY;
-
-  if(
-    py < -TILE ||
-    py > canvas.height + TILE
-  ){
-    return;
-  }
-
-  if(type === 0){
-
-    ctx.fillStyle =
-      "#080604";
-
-    ctx.fillRect(
-      px,
-      py,
-      TILE,
-      TILE
-    );
-
-    return;
-  }
-
-  ctx.fillStyle =
-    getColor(y);
-
-  ctx.fillRect(
-    px,
-    py,
-    TILE,
-    TILE
-  );
-
-  ctx.fillStyle =
-    "rgba(0,0,0,0.22)";
-
-  ctx.fillRect(
-    px,
-    py + TILE - 4,
-    TILE,
-    4
-  );
-
-  ctx.fillRect(
-    px + TILE - 3,
-    py,
-    3,
-    TILE
-  );
-
-  if(type === 2){
-
-    ctx.fillStyle =
-      "#0b0b0b";
-
-    ctx.fillRect(
-      px + 6,
-      py + 6,
-      10,
-      8
-    );
-
-    ctx.fillRect(
-      px + 10,
-      py + 13,
-      7,
-      5
-    );
-  }
-
-  if(type === 3){
-
-    ctx.fillStyle =
-      "#555";
-
-    ctx.fillRect(
-      px + 3,
-      py + 3,
-      18,
-      18
-    );
-  }
-}
-
-function drawBackground(){
-
-  ctx.fillStyle =
-    "#060403";
-
-  ctx.fillRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
-}
-
-function drawPlayer(){
-
-  const img =
-    swing
-      ? swingImg
-      : idleImg;
-
-  const px =
-    player.x * TILE - 34;
-
-  const py =
-    player.y * TILE
-    - cameraY
-    - 70;
-
-  ctx.drawImage(
-    img,
-    px,
-    py,
-    96,
-    96
-  );
 }
 
 function loop(){
 
-  if(!running){
-    return;
-  }
+if(gameOver)return;
 
-  time -= 1/60;
+draw();
 
-  if(time <= 0){
+requestAnimationFrame(loop);
 
-    endGame();
-    return;
-  }
-
-  if(moveCooldown > 0){
-
-    moveCooldown--;
-  }
-
-  if(leftPressed){
-
-    move(-1);
-  }
-
-  if(rightPressed){
-
-    move(1);
-  }
-
-  autoDigTimer++;
-
-  if(autoDigTimer >= 10){
-
-    autoDigTimer = 0;
-
-    digStep();
-  }
-
-  const targetCameraY =
-    player.y * TILE
-    - canvas.height * 0.35;
-
-  cameraY +=
-    (
-      targetCameraY - cameraY
-    ) * 0.1;
-
-  if(cameraY < 0){
-    cameraY = 0;
-  }
-
-  ctx.save();
-
-  if(shake > 0){
-
-    ctx.translate(
-      (Math.random()-0.5)
-      * shake,
-
-      (Math.random()-0.5)
-      * shake
-    );
-
-    shake *= 0.8;
-  }
-
-  drawBackground();
-
-  for(let y=0;y<map.length;y++){
-
-    for(let x=0;x<COLS;x++){
-
-      drawTile(
-        x,
-        y,
-        map[y][x]
-      );
-    }
-  }
-
-  drawPlayer();
-
-  ctx.restore();
-
-  updateHud();
-
-  requestAnimationFrame(loop);
 }
 
-function holdButton(
-  btn,
-  onStart,
-  onEnd
-){
+function draw(){
 
-  btn.addEventListener(
-    "touchstart",
-    e=>{
-      e.preventDefault();
-      onStart();
-    }
-  );
+ctx.fillStyle="#8c6239";
+ctx.fillRect(0,0,320,480);
 
-  btn.addEventListener(
-    "touchend",
-    e=>{
-      e.preventDefault();
-      onEnd();
-    }
-  );
+for(let y=0;y<15;y++){
 
-  btn.addEventListener(
-    "touchcancel",
-    e=>{
-      e.preventDefault();
-      onEnd();
-    }
-  );
+for(let x=0;x<10;x++){
 
-  btn.addEventListener(
-    "mousedown",
-    e=>{
-      e.preventDefault();
-      onStart();
-    }
-  );
+let my=y+player.y-7;
 
-  btn.addEventListener(
-    "mouseup",
-    e=>{
-      e.preventDefault();
-      onEnd();
-    }
-  );
+if(my<0||my>=map.length) continue;
 
-  btn.addEventListener(
-    "mouseleave",
-    e=>{
-      e.preventDefault();
-      onEnd();
-    }
-  );
+let tile=map[my][x];
+
+if(tile==="soil"){
+ctx.fillStyle="#a06d3f";
 }
 
-holdButton(
-  leftBtn,
-  ()=> leftPressed = true,
-  ()=> leftPressed = false
+if(tile==="coal"){
+ctx.fillStyle="#222";
+}
+
+if(tile==="rock"){
+ctx.fillStyle="#777";
+}
+
+if(tile==="empty"){
+ctx.fillStyle="#8c6239";
+}
+
+ctx.fillRect(
+x*TILE,
+y*TILE,
+TILE-1,
+TILE-1
 );
 
-holdButton(
-  rightBtn,
-  ()=> rightPressed = true,
-  ()=> rightPressed = false
+}
+
+}
+
+ctx.fillStyle="pink";
+
+ctx.fillRect(
+player.x*TILE,
+7*TILE,
+TILE,
+TILE
 );
 
-startBtn.addEventListener(
-  "click",
-  startGame
+}
+
+document.addEventListener("keydown",(e)=>{
+
+if(gameOver)return;
+
+let nx=player.x;
+let ny=player.y;
+
+if(e.key==="ArrowLeft") nx--;
+if(e.key==="ArrowRight") nx++;
+if(e.key==="ArrowDown") ny++;
+
+move(nx,ny);
+
+});
+
+canvas.addEventListener("click",()=>{
+
+if(gameOver)return;
+
+move(player.x,player.y+1);
+
+});
+
+function move(nx,ny){
+
+if(nx<0||nx>=10)return;
+if(ny<0||ny>=50)return;
+
+let tile=map[ny][nx];
+
+if(tile==="rock"){
+
+return;
+
+}
+
+if(tile==="coal"){
+coal++;
+}
+
+map[ny][nx]="empty";
+
+player.x=nx;
+player.y=ny;
+
+depth=Math.max(depth,ny);
+
+updateHUD();
+
+if(ny>=49){
+
+finishGame();
+
+}
+
+}
+
+function finishGame(){
+
+gameOver=true;
+
+gameScreen.classList.remove("active");
+resultScreen.classList.add("active");
+
+let title;
+let image;
+
+if(coal<20){
+
+title="穴掘りビギナー";
+image="rank_beginner.png";
+
+}
+else if(coal<50){
+
+title="穴掘りキング";
+image="rank_king.png";
+
+}
+else{
+
+title="地底の住人";
+image="rank_underground.png";
+
+}
+
+rankTitle.textContent=title;
+rankImage.src=image;
+finalScore.textContent=`石炭 ${coal}個`;
+
+}
+
+shareBtn.addEventListener("click",()=>{
+
+const text=
+`石炭を${coal}個掘った！⛏️🪨\n無料ブラウザゲーム「石炭掘って」\n#石炭掘って`;
+
+window.open(
+`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`
 );
 
-titleImage.addEventListener(
-  "click",
-  startGame
-);
+});
 
-retryBtn.addEventListener(
-  "click",
-  startGame
-);
+retryBtn.addEventListener("click",startGame);
 
-backBtn.addEventListener(
-  "click",
-  ()=>{
+homeBtn.addEventListener("click",()=>{
 
-    running = false;
+resultScreen.classList.remove("active");
+titleScreen.classList.add("active");
 
-    bgm.pause();
+});
 
-    showScreen(titleScreen);
-  }
-);
-
-homeBtn.addEventListener(
-  "click",
-  ()=>{
-
-    location.href =
-      "https://afoolhippo.github.io/home/?skipTitle=1";
-  }
-);
-
-shareBtn.addEventListener(
-  "click",
-  ()=>{
-
-    const text =
-      `気づいたら\n` +
-      `ずっと石炭を掘っていた。⛏️🪨\n\n` +
-      `深度 ${depth}m\n` +
-      `石炭 ${coal}個\n\n` +
-      `無料ブラウザゲーム\n` +
-      `「石炭掘って」\n` +
-      `https://afoolhippo.github.io/game17/\n\n` +
-      `#石炭掘って\n` +
-      `#カバゲーセン`;
-
-    window.open(
-      "https://twitter.com/intent/tweet?text="
-      + encodeURIComponent(text),
-      "_blank"
-    );
-  }
-);
+startBtn.addEventListener("click",startGame);
